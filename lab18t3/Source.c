@@ -34,38 +34,78 @@ int main(void) {
 	Train* copy_trains;
 	char copy_name[] = "copy.txt";
 	int SIZE;
-	char comp_direction[] = "fff";
+	int copy_size;
+	char comp_direction[20];
+
+	//print_array(trains, SIZE);
+
+	Train* checker;
+
 	printf("Введите количество записей: ");
 	scanf("%d", &SIZE);
-	trains = (Train*)malloc(SIZE * sizeof(Train));
-	copy_trains = (Train*)malloc(SIZE * sizeof(Train));
-	fillTrainArray(trains, SIZE);
-	//print_array(trains, SIZE);
-	//fill_array(trains, SIZE);
 
-	Train* checker = search_trains(trains, SIZE, comp_direction);
-	if (checker != NULL) {
-		printf("Найден поезд %d\n", checker->num_of_train);
-		printf("Направление: %s\n", checker->direction);
+
+	printf("Выберите действие: \n"
+		"1. Заполнить массив случайными числами\n"
+		"2. Заполнить массив с клавиатуры\n");
+
+	while (getchar() != '\n');
+	char a = getchar();
+	switch (a)
+	{
+	case '1':
+		trains = (Train*)malloc(SIZE * sizeof(Train));
+		fillTrainArray(trains, SIZE);
+		print_array(trains, SIZE);
+		break;
+	case '2':
+		trains = (Train*)malloc(SIZE * sizeof(Train));
+		fill_array(trains, SIZE);
+		print_array(trains, SIZE);
+		break;
+	default:
+		puts("Ошибка ввода");
+		return 1;
 	}
-	else
-		puts("Поезд не найден!");
+	while (getchar() != '\n');
 
-	print_array(trains, SIZE);
-
-	qsort(trains, SIZE, sizeof(Train), compare);
-
-	print_array(trains, SIZE);
-
-	if (output_file(fname, trains, SIZE) == 1)
-		printf("Данные успешно записаны в файл");
-
-
-	input_file(copy_name, copy_trains);
-	print_array(copy_trains, 5);
-
-
-
+	printf("Выберите действие: \n"
+		"1. Найти элемент массива по направлению\n"
+		"2. Отсортировать массив\n"
+		"3. Выгрузить массив в файл\n"
+		"4. Загрузить массив из файла\n");
+	a = getchar();
+	switch (a) {
+	case '1':
+		printf("Введите направление: ");
+		scanf("%s", comp_direction);
+		checker = search_trains(trains, SIZE, comp_direction);
+		if (checker != NULL) {
+			printf("Найден поезд %d\n", checker->num_of_train);
+			printf("Направление: %s\n", checker->direction);
+		}
+		else
+			puts("Поезд не найден!");
+		print_array(trains, SIZE);
+		break;
+	case '2':
+		qsort(trains, SIZE, sizeof(Train), compare);
+		print_array(trains, SIZE);
+		break;
+	case '3':
+		if (output_file(fname, trains, SIZE) == 0)
+			printf("Данные успешно записаны в файл");
+		break;
+	case '4':
+		copy_size = 4;
+		copy_trains = (Train*)malloc(copy_size * sizeof(Train));
+		input_file(copy_name, copy_trains);
+		break;
+	default:
+		puts("Ошибка ввода");
+		return 1;
+	}
+	while (getchar() != '\n');
 
 	return 0;
 
@@ -206,7 +246,6 @@ int output_file(char* fname, Train* trains, int size) {
 }
 
 int input_file(char* filename, Train* arr) {
-	//setlocale(LC_CTYPE, "ru_RU.UTF-8");
 
 	char buffer[256];
 	int count = 0;
@@ -217,50 +256,14 @@ int input_file(char* filename, Train* arr) {
 		return 1;
 	}
 
-	//for (int i = 0; !feof(in); i++) {
-	//	fgets(buffer, sizeof(buffer), in);
-	//	temp[i] = buffer;
-	//	if(i == )
-	//}
-
-	while(fgets(buffer, sizeof(buffer), in)) {
-		sscanf(buffer, "%d %d %d %s %d",
-			&temp.num_of_train,
-			&temp.arrival_time,
-			&temp.departure_time,
-			temp.direction,
-			&temp.distance);
-
-		
-
-		arr[count].num_of_train = temp.num_of_train;
-		arr[count].arrival_time = temp.arrival_time;
-		arr[count].departure_time = temp.departure_time;
-		strcpy(arr[count].direction, temp.direction);
-		arr[count].distance = temp.distance;
-		count++;
+	for (int i = 0; !feof(in); i++) {
+		fgets(buffer, sizeof(buffer), in);
+		puts(buffer);
 	}
 
 
 
 	fclose(in);
-
-	//char buff[256];
-	//char* info = " %2d %02d:%02d %02d:%02d %s %d %.2f";
-
-	//printf("|  N  || Время прибытия || Время отбытия || %6c Направление %6c || Расстояние (км) || Средняя скорость (км/ч) | \n", ' ', ' ');
-	//printf("_____________________________________________________________________________________________________________________\n");
-	//for (int i = 0; i < 5; i++) {
-	//	sprintf(buff, info,
-	//		arr[i].num_of_train,
-	//		arr[i].arrival_time / 60, arr[i].arrival_time % 60,
-	//		arr[i].departure_time / 60, arr[i].departure_time % 60,
-	//		arr[i].direction,
-	//		arr[i].distance,
-	//		train_speed(arr[i].arrival_time, arr[i].departure_time, arr[i].distance));
-
-	//	puts(buff);
-	//}
 
 	return count;;
 }
